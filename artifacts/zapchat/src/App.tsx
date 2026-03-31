@@ -6,6 +6,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
+import MessagesPage from "@/pages/dashboard-messages";
+import CustomersPage from "@/pages/dashboard-customers";
+import AutomationsPage from "@/pages/dashboard-automations";
+import SettingsPage from "@/pages/dashboard-settings";
 import FeaturesPage from "@/pages/features";
 import PricingPage from "@/pages/pricing";
 import DocsPage from "@/pages/docs";
@@ -21,6 +25,10 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard/messages" component={MessagesPage} />
+      <Route path="/dashboard/customers" component={CustomersPage} />
+      <Route path="/dashboard/automations" component={AutomationsPage} />
+      <Route path="/dashboard/settings" component={SettingsPage} />
       <Route path="/features" component={FeaturesPage} />
       <Route path="/pricing" component={PricingPage} />
       <Route path="/docs" component={DocsPage} />

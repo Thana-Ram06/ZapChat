@@ -1,0 +1,122 @@
+import { Link, useLocation } from "wouter";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  MessageSquare,
+  Users,
+  BarChart3,
+  Settings,
+  LogOut,
+  Bell,
+  Search,
+  Zap,
+} from "lucide-react";
+
+const navItems = [
+  { icon: BarChart3, label: "Overview", href: "/dashboard" },
+  { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
+  { icon: Users, label: "Customers", href: "/dashboard/customers" },
+  { icon: Zap, label: "Automations", href: "/dashboard/automations" },
+  { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+];
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  title: string;
+  description?: string;
+  actions?: React.ReactNode;
+}
+
+export function DashboardLayout({ children, title, description, actions }: DashboardLayoutProps) {
+  const [location] = useLocation();
+
+  return (
+    <div className="min-h-[100dvh] flex bg-background">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-sidebar-border bg-sidebar hidden md:flex flex-col shrink-0">
+        <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <div className="w-7 h-7 rounded-md overflow-hidden shrink-0">
+              <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-contain" />
+            </div>
+            <span className="font-serif text-xl tracking-tight">ZapChat</span>
+          </Link>
+        </div>
+
+        <div className="flex-1 py-6 px-4">
+          <div className="space-y-1">
+            {navItems.map((item) => {
+              const isActive =
+                item.href === "/dashboard"
+                  ? location === "/dashboard"
+                  : location.startsWith(item.href);
+              return (
+                <Link key={item.label} href={item.href}>
+                  <div
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 ${
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                    }`}
+                  >
+                    <item.icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
+                    {item.label}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-sidebar-border">
+          <div className="flex items-center gap-3 px-3 py-2">
+            <Avatar className="w-8 h-8 rounded-md">
+              <AvatarFallback className="rounded-md bg-primary/20 text-primary text-xs font-semibold">JD</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 overflow-hidden">
+              <div className="text-sm font-medium truncate">John Doe</div>
+              <div className="text-xs text-sidebar-foreground/60 truncate">Free Plan</div>
+            </div>
+            <button className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors">
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 flex flex-col min-w-0">
+        {/* Topbar */}
+        <header className="h-16 border-b border-border bg-background/95 backdrop-blur flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+          <div className="relative w-64 hidden sm:block">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              className="pl-9 bg-muted/50 border-transparent focus-visible:bg-background h-9 rounded-lg"
+            />
+          </div>
+          <div className="flex items-center gap-3 ml-auto">
+            <Button variant="ghost" size="icon" className="rounded-full relative">
+              <Bell className="w-4 h-4" />
+            </Button>
+            <ThemeToggle />
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div className="flex-1 p-4 md:p-8 overflow-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+              {description && <p className="text-muted-foreground mt-1">{description}</p>}
+            </div>
+            {actions && <div className="flex items-center gap-3">{actions}</div>}
+          </div>
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}

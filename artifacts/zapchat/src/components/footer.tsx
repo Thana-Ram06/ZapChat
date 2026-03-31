@@ -60,7 +60,7 @@ export function Footer() {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} ZapChat Inc. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
             <Link href="/privacy" className="hover:text-foreground transition-colors relative group">
               Privacy Policy
               <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground transition-all duration-200 group-hover:w-full" />
@@ -69,6 +69,15 @@ export function Footer() {
               Terms of Service
               <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground transition-all duration-200 group-hover:w-full" />
             </Link>
+            <a
+              href="https://x.com/anoinv?s=21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors relative group"
+            >
+              Made by me
+              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground transition-all duration-200 group-hover:w-full" />
+            </a>
           </div>
         </div>
       </div>
