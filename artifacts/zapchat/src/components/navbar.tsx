@@ -1,15 +1,17 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/contexts/auth-context";
+import { LayoutDashboard } from "lucide-react";
 
 export function Navbar() {
   const [location] = useLocation();
+  const { user, loading } = useAuth();
 
   const navLinks = [
     { href: "/features", label: "Features" },
     { href: "/pricing", label: "Pricing" },
     { href: "/docs", label: "Docs" },
-    { href: "/dashboard", label: "Dashboard" },
   ];
 
   return (
@@ -36,11 +38,22 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button asChild className="rounded-xl hidden sm:inline-flex">
-            <Link href="/dashboard">Get Started</Link>
-          </Button>
+          {!loading && (
+            user ? (
+              <Button asChild className="rounded-xl hidden sm:inline-flex gap-2">
+                <Link href="/dashboard">
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild className="rounded-xl hidden sm:inline-flex">
+                <Link href="/login">Get Started</Link>
+              </Button>
+            )
+          )}
         </div>
       </div>
     </header>

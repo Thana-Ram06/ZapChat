@@ -2,7 +2,8 @@ import { Link, useLocation } from "wouter";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/auth-context";
 import {
   MessageSquare,
   Users,
@@ -13,6 +14,7 @@ import {
   Search,
   Zap,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const navItems = [
   { icon: BarChart3, label: "Overview", href: "/dashboard" },
@@ -30,7 +32,37 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, title, description, actions }: DashboardLayoutProps) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+  const { user, loading, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
+
+  async function handleSignOut() {
+    await signOut();
+    navigate("/");
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+        <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const displayName = user.displayName || user.email?.split("@")[0] || "User";
+  const initials = displayName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="min-h-[100dvh] flex bg-background">
@@ -72,14 +104,21 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
 
         <div className="p-4 border-t border-sidebar-border">
           <div className="flex items-center gap-3 px-3 py-2">
-            <Avatar className="w-8 h-8 rounded-md">
-              <AvatarFallback className="rounded-md bg-primary/20 text-primary text-xs font-semibold">JD</AvatarFallback>
+            <Avatar className="w-8 h-8 rounded-md shrink-0">
+              {user.photoURL && <AvatarImage src={user.photoURL} alt={displayName} className="rounded-md" />}
+              <AvatarFallback className="rounded-md bg-primary/20 text-primary text-xs font-semibold">
+                {initials}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
-              <div className="text-sm font-medium truncate">John Doe</div>
-              <div className="text-xs text-sidebar-foreground/60 truncate">Free Plan</div>
+              <div className="text-sm font-medium truncate">{displayName}</div>
+              <div className="text-xs text-sidebar-foreground/60 truncate">{user.email}</div>
             </div>
-            <button className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors">
+            <button
+              onClick={handleSignOut}
+              title="Sign out"
+              className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
+            >
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -102,6 +141,12 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
               <Bell className="w-4 h-4" />
             </Button>
             <ThemeToggle />
+            <Avatar className="w-8 h-8 rounded-full cursor-pointer" onClick={() => navigate("/dashboard/settings")}>
+              {user.photoURL && <AvatarImage src={user.photoURL} alt={displayName} />}
+              <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
           </div>
         </header>
 
