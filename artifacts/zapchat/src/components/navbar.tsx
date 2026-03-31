@@ -18,7 +18,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
-              <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
+              <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-contain" />
             </div>
             <span className="font-serif text-2xl tracking-tight">ZapChat</span>
           </Link>

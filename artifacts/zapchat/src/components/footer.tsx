@@ -27,7 +27,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="w-6 h-6 rounded-md overflow-hidden shrink-0">
-                <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
+                <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-contain" />
               </div>
               <span className="font-serif text-xl">ZapChat</span>
             </Link>
