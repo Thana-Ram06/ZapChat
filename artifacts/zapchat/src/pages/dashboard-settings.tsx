@@ -1,21 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useAuth } from "@/contexts/auth-context";
+import { getUserProfile, updateUserProfile } from "@/lib/firestore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Link2, Bell, Shield, MessageSquare, LogOut, CheckCircle2 } from "lucide-react";
+import { Link2, Bell, Shield, MessageSquare, LogOut, CheckCircle2, Loader2 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
   const [, navigate] = useLocation();
   const [savedProfile, setSavedProfile] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [businessName, setBusinessName] = useState("");
+  const [displayNameInput, setDisplayNameInput] = useState("");
 
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
   const initials = displayName
@@ -24,6 +28,16 @@ export default function SettingsPage() {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  useEffect(() => {
+    if (!user) return;
+    getUserProfile(user.uid).then((profile) => {
+      if (profile) {
+        setBusinessName(profile.businessName || "");
+        setDisplayNameInput(profile.displayName || user.displayName || "");
+      }
+    });
+  }, [user]);
 
   async function handleSignOut() {
     await signOut();
@@ -66,14 +80,21 @@ export default function SettingsPage() {
                 <Label htmlFor="name">Display Name</Label>
                 <Input
                   id="name"
-                  defaultValue={user?.displayName || ""}
+                  value={displayNameInput}
+                  onChange={(e) => setDisplayNameInput(e.target.value)}
                   placeholder="Your name"
                   className="rounded-xl"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="business">Business Name</Label>
-                <Input id="business" placeholder="Acme Inc." className="rounded-xl" />
+                <Input
+                  id="business"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Acme Inc."
+                  className="rounded-xl"
+                />
               </div>
             </div>
             <div className="space-y-2">
@@ -89,12 +110,21 @@ export default function SettingsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Button
-                className="rounded-xl"
-                onClick={() => {
+                className="rounded-xl gap-2"
+                disabled={savingProfile}
+                onClick={async () => {
+                  if (!user) return;
+                  setSavingProfile(true);
+                  await updateUserProfile(user.uid, {
+                    displayName: displayNameInput,
+                    businessName,
+                  });
+                  setSavingProfile(false);
                   setSavedProfile(true);
-                  setTimeout(() => setSavedProfile(false), 2000);
+                  setTimeout(() => setSavedProfile(false), 2500);
                 }}
               >
+                {savingProfile && <Loader2 className="w-4 h-4 animate-spin" />}
                 {savedProfile ? "Saved!" : "Save Changes"}
               </Button>
               {savedProfile && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}

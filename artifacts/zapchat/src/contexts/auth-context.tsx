@@ -12,6 +12,7 @@ import {
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
+import { saveUserProfile } from "@/lib/firestore";
 
 interface AuthContextType {
   user: User | null;
@@ -32,8 +33,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
+      if (firebaseUser) {
+        await saveUserProfile(firebaseUser);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
