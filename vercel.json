@@ -1,6 +1,6 @@
 {
-  "outputDirectory": "artifacts/zapchat/dist/public",
-  "buildCommand": "cd artifacts/zapchat && pnpm install --frozen-lockfile && pnpm run build",
   "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @workspace/zapchat run build",
+  "outputDirectory": "artifacts/zapchat/dist/public",
   "framework": null
 }
