@@ -1,36 +1,13 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { CheckCircle2, MessageSquare, Zap, BarChart3, Users, Clock } from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { CheckCircle2, MessageSquare, Zap, BarChart3, Users } from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background selection:bg-primary/20">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-              <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
-                <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
-              </div>
-              <span className="font-serif text-2xl tracking-tight">ZapChat</span>
-            </Link>
-          </div>
-          
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-            <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
-            <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Button asChild className="rounded-xl hidden sm:inline-flex">
-              <Link href="/dashboard">Get Started</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -56,8 +33,8 @@ export default function LandingPage() {
               <Button size="lg" className="rounded-xl h-14 px-8 text-base w-full sm:w-auto" asChild>
                 <Link href="/dashboard">Start Your Free Trial</Link>
               </Button>
-              <Button size="lg" variant="outline" className="rounded-xl h-14 px-8 text-base w-full sm:w-auto">
-                Book a Demo
+              <Button size="lg" variant="outline" className="rounded-xl h-14 px-8 text-base w-full sm:w-auto" asChild>
+                <Link href="/contact">Book a Demo</Link>
               </Button>
             </div>
           </div>
@@ -105,6 +82,12 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+
+            <div className="text-center mt-12">
+              <Button variant="outline" className="rounded-xl" asChild>
+                <Link href="/features">See all features →</Link>
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -135,7 +118,9 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-xl" variant="outline">Get Starter</Button>
+                <Button className="w-full rounded-xl" variant="outline" asChild>
+                  <Link href="/pricing">Get Starter</Link>
+                </Button>
               </div>
 
               {/* Pro */}
@@ -159,7 +144,9 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-xl bg-background text-foreground hover:bg-background/90" size="lg">Get Pro</Button>
+                <Button className="w-full rounded-xl bg-background text-foreground hover:bg-background/90" size="lg" asChild>
+                  <Link href="/pricing">Get Pro</Link>
+                </Button>
               </div>
 
               {/* Business */}
@@ -180,7 +167,9 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-xl" variant="outline">Contact Sales</Button>
+                <Button className="w-full rounded-xl" variant="outline" asChild>
+                  <Link href="/contact">Contact Sales</Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -219,63 +208,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-border py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            <div className="col-span-2 md:col-span-1">
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-6 rounded-md overflow-hidden shrink-0">
-                  <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
-                </div>
-                <span className="font-serif text-xl">ZapChat</span>
-              </Link>
-              <p className="text-sm text-muted-foreground max-w-xs">
-                Premium WhatsApp automation for modern businesses. Build better relationships, automatically.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground">Features</a></li>
-                <li><a href="#" className="hover:text-foreground">Integrations</a></li>
-                <li><a href="#" className="hover:text-foreground">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground">Changelog</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground">Documentation</a></li>
-                <li><a href="#" className="hover:text-foreground">API Reference</a></li>
-                <li><a href="#" className="hover:text-foreground">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground">Community</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground">About</a></li>
-                <li><a href="#" className="hover:text-foreground">Careers</a></li>
-                <li><a href="#" className="hover:text-foreground">Contact</a></li>
-                <li><a href="#" className="hover:text-foreground">Legal</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} ZapChat Inc. All rights reserved.
-            </p>
-            <div className="flex gap-4 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground">Privacy Policy</a>
-              <a href="#" className="hover:text-foreground">Terms of Service</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
