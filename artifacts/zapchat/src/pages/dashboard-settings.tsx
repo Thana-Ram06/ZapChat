@@ -9,8 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Link2, Bell, Shield, MessageSquare, LogOut, CheckCircle2, Loader2 } from "lucide-react";
+import { Link2, Bell, Shield, MessageSquare, LogOut, CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+
+interface WhatsAppStatus {
+  configured: boolean;
+  phoneNumberId: string | null;
+  messageCount: number;
+}
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
@@ -20,6 +26,8 @@ export default function SettingsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [businessName, setBusinessName] = useState("");
   const [displayNameInput, setDisplayNameInput] = useState("");
+  const [whatsappStatus, setWhatsappStatus] = useState<WhatsAppStatus | null>(null);
+  const [checkingWA, setCheckingWA] = useState(true);
 
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
   const initials = displayName
@@ -38,6 +46,23 @@ export default function SettingsPage() {
       }
     });
   }, [user]);
+
+  useEffect(() => {
+    async function checkWhatsApp() {
+      try {
+        const res = await fetch("/api/whatsapp/status");
+        if (res.ok) {
+          const data = await res.json();
+          setWhatsappStatus(data);
+        }
+      } catch {
+        setWhatsappStatus({ configured: false, phoneNumberId: null, messageCount: 0 });
+      } finally {
+        setCheckingWA(false);
+      }
+    }
+    checkWhatsApp();
+  }, []);
 
   async function handleSignOut() {
     await signOut();
@@ -148,18 +173,41 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* WhatsApp */}
-        <Card className="rounded-2xl border-border shadow-sm">
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-              <Link2 className="w-5 h-5" />
+        {/* WhatsApp Connection */}
+        <Card className={`rounded-2xl shadow-sm border ${whatsappStatus?.configured ? "border-emerald-500/30" : "border-border"}`}>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-4">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${whatsappStatus?.configured ? "bg-emerald-500/10 text-emerald-600" : "bg-primary/10 text-primary"}`}>
+                <Link2 className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm">WhatsApp Connection</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {checkingWA
+                    ? "Checking connection..."
+                    : whatsappStatus?.configured
+                      ? `Connected · Phone ID: ${whatsappStatus.phoneNumberId} · ${whatsappStatus.messageCount} messages`
+                      : "WhatsApp credentials not configured."}
+                </p>
+              </div>
+              {checkingWA ? (
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />
+              ) : whatsappStatus?.configured ? (
+                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs shrink-0 gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs shrink-0 text-destructive border-destructive/30">
+                  Not connected
+                </Badge>
+              )}
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-sm">WhatsApp Connection</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Connect your WhatsApp Business number.</p>
-            </div>
-            <Badge variant="outline" className="text-xs shrink-0">Not connected</Badge>
-            <Button variant="outline" size="sm" className="rounded-lg shrink-0">Connect</Button>
+            {!checkingWA && !whatsappStatus?.configured && (
+              <p className="text-xs text-muted-foreground mt-3 pl-14">
+                Add your <span className="font-medium text-foreground">WHATSAPP_ACCESS_TOKEN</span> and <span className="font-medium text-foreground">WHATSAPP_PHONE_NUMBER_ID</span> in Replit Secrets to connect.
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -171,10 +219,19 @@ export default function SettingsPage() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm">Message Templates</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Manage pre-approved WhatsApp message templates.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Manage pre-approved WhatsApp message templates in Meta Business Manager.
+              </p>
             </div>
-            <Button variant="outline" size="sm" className="rounded-lg shrink-0" asChild>
-              <a href="/dashboard/messages">Manage</a>
+            <Button variant="outline" size="sm" className="rounded-lg shrink-0 gap-1.5" asChild>
+              <a
+                href="https://business.facebook.com/wa/manage/message-templates/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Meta
+                <ExternalLink className="w-3 h-3" />
+              </a>
             </Button>
           </CardContent>
         </Card>
