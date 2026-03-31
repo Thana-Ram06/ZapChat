@@ -10,7 +10,9 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-              <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-8 h-8 rounded-lg object-cover" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+                <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
+              </div>
               <span className="font-serif text-2xl tracking-tight">ZapChat</span>
             </Link>
           </div>
@@ -222,7 +224,9 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="flex items-center gap-2 mb-4">
-                <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-6 h-6 rounded-md" />
+                <div className="w-6 h-6 rounded-md overflow-hidden shrink-0">
+                  <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
+                </div>
                 <span className="font-serif text-xl">ZapChat</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-xs">

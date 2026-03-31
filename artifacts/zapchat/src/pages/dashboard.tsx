@@ -53,7 +53,9 @@ export default function Dashboard() {
       <aside className="w-64 border-r border-sidebar-border bg-sidebar hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-7 h-7 rounded-md object-cover" />
+            <div className="w-7 h-7 rounded-md overflow-hidden shrink-0">
+              <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-cover scale-[1.32]" />
+            </div>
             <span className="font-serif text-xl tracking-tight">ZapChat</span>
           </Link>
         </div>
