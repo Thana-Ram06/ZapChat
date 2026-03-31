@@ -1,0 +1,97 @@
+Create a modern SaaS web application called ZapChat using Next.js (App Router), TypeScript, and Tailwind CSS.
+
+The app should have a premium, minimal UI design inspired by:
+- tpot.cc  
+- lnk.ad  
+- tree.je  
+- xscouter.ai  
+
+## 🎨 Design Requirements
+- Clean, minimal, premium SaaS style  
+- Center-aligned layout  
+- Soft borders (no heavy shadows)  
+- Smooth spacing and typography  
+- Rounded corners (xl / 2xl)  
+- Fully responsive (mobile + desktop)
+
+## 🔤 Fonts
+- Headings: Instrument Serif  
+- Body: Inter  
+
+## 🌗 Theme System
+- Implement light mode + dark mode
+- Add a theme toggle button (top right corner)
+- Dark theme should be soft gray (not pure black)
+- Light theme should be clean white with subtle borders
+- Save theme preference in localStorage
+
+## 🖼️ Logo
+- Use the uploaded ZapChat logo (I will provide it in chat)
+- Show logo:
+  - Navbar (left side)
+  - Landing page hero section
+- Logo should be visible in both light and dark themes
+
+## 🧱 Pages
+
+### 1. Landing Page (/)
+- Hero section:
+  - Logo + “ZapChat” text
+  - Headline: “Automate your WhatsApp. Grow faster.”
+  - Subtext
+  - CTA button (green in dark mode)
+
+- Features section:
+  - Auto replies
+  - Order management
+  - Customer CRM
+  - Analytics
+
+- Pricing section (3 tiers)
+
+---
+
+### 2. Dashboard (/dashboard)
+- Protected route (basic auth UI only for now)
+- Layout:
+  - Sidebar (minimal)
+  - Top bar with theme toggle
+
+- Sections:
+  - Overview cards (orders, customers, revenue)
+  - Recent messages
+  - Orders table
+  - Customer list
+
+---
+
+## ⚙️ Tech Stack
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- Use functional components
+- Clean folder structure
+
+## 📁 Folder Structure
+- app/
+- components/
+- lib/
+- styles/
+
+## ✨ UI Details
+- No heavy shadows
+- Use subtle borders (gray-200 / gray-800)
+- Smooth hover effects
+- Buttons:
+  - rounded-xl
+  - slightly bold
+- Animations:
+  - subtle fade-in
+  - hover scale
+
+## 🔥 Extra
+- Make UI look like a real startup product
+- Focus heavily on spacing, typography, and alignment
+- Keep everything clean and premium
+
+Generate full working code for this project
