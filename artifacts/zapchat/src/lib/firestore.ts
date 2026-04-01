@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   query,
   orderBy,
+  getDocs,
   Unsubscribe,
 } from "firebase/firestore";
 import { User } from "firebase/auth";
@@ -154,14 +155,37 @@ export async function saveMessage(
 
 export function subscribeToMessages(
   uid: string,
-  callback: (messages: ChatMessage[]) => void
+  callback: (messages: ChatMessage[]) => void,
+  onError?: (err: Error) => void
 ): Unsubscribe {
   const q = query(
     collection(db, "users", uid, "messages"),
     orderBy("createdAt", "asc")
   );
-  return onSnapshot(q, (snap) => {
-    const data = snap.docs.map((d) => ({ ...d.data() } as ChatMessage));
-    callback(data);
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      const data = snap.docs.map((d) => ({ ...d.data() } as ChatMessage));
+      callback(data);
+    },
+    (err) => {
+      console.error("Messages subscription error:", err);
+      onError?.(err);
+    }
+  );
+}
+
+// ─── Delete all user data ─────────────────────────────────────────────────
+
+async function deleteSubCollection(uid: string, sub: string) {
+  const snap = await getDocs(collection(db, "users", uid, sub));
+  const deletes = snap.docs.map((d) => deleteDoc(d.ref));
+  await Promise.all(deletes);
+}
+
+export async function deleteAllUserData(uid: string): Promise<void> {
+  await deleteSubCollection(uid, "messages");
+  await deleteSubCollection(uid, "customers");
+  await deleteSubCollection(uid, "automations");
+  await deleteDoc(doc(db, "users", uid));
 }

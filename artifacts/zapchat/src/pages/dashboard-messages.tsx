@@ -92,13 +92,28 @@ export default function MessagesPage() {
   // ── Subscribe to Firestore messages (real-time) ────────────────────────
   useEffect(() => {
     if (!user) return;
-    const unsub = subscribeToMessages(user.uid, (msgs) => {
-      setMessages(msgs);
-      setLoading(false);
-      // Mark all Firestore message IDs as seen so we don't re-save them
-      msgs.forEach((m) => seenApiIds.current.add(m.id));
-    });
-    return () => unsub();
+
+    // Safety timeout — if Firestore never responds in 8s, stop loading
+    const timeout = setTimeout(() => setLoading(false), 8000);
+
+    const unsub = subscribeToMessages(
+      user.uid,
+      (msgs) => {
+        clearTimeout(timeout);
+        setMessages(msgs);
+        setLoading(false);
+        msgs.forEach((m) => seenApiIds.current.add(m.id));
+      },
+      () => {
+        // Firestore error — stop loading and show empty state
+        clearTimeout(timeout);
+        setLoading(false);
+      }
+    );
+    return () => {
+      clearTimeout(timeout);
+      unsub();
+    };
   }, [user]);
 
   // ── Subscribe to customers ─────────────────────────────────────────────

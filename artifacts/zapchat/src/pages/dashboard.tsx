@@ -3,8 +3,10 @@ import { Link } from "wouter";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useAuth } from "@/contexts/auth-context";
 import { subscribeToCustomers, subscribeToAutomations } from "@/lib/firestore";
+import { apiUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   MessageSquare,
   Users,
@@ -13,6 +15,8 @@ import {
   ArrowRight,
   CheckCircle2,
   Loader2,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 
 const quickActions = [
@@ -41,6 +45,7 @@ export default function Dashboard() {
   const [customerCount, setCustomerCount] = useState<number | null>(null);
   const [automationCount, setAutomationCount] = useState<number | null>(null);
   const [activeAutomations, setActiveAutomations] = useState(0);
+  const [waConnected, setWaConnected] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -57,27 +62,40 @@ export default function Dashboard() {
     };
   }, [user]);
 
+  useEffect(() => {
+    fetch(apiUrl("/whatsapp/status"))
+      .then((r) => r.json())
+      .then((d) => setWaConnected(d.configured))
+      .catch(() => setWaConnected(false));
+  }, []);
+
   const displayName = user?.displayName?.split(" ")[0] || "there";
 
   const stats = [
     {
       label: "Total Customers",
       value: customerCount === null ? null : customerCount,
-      note: customerCount === 0 ? "Add your first customer" : `${customerCount} contact${customerCount !== 1 ? "s" : ""}`,
+      note:
+        customerCount === 0
+          ? "Add your first customer"
+          : `${customerCount} contact${customerCount !== 1 ? "s" : ""}`,
       icon: Users,
       href: "/dashboard/customers",
     },
     {
       label: "Active Automations",
-      value: activeAutomations === null ? null : activeAutomations,
-      note: automationCount === 0 ? "Create your first flow" : `${automationCount} flow${automationCount !== 1 ? "s" : ""} total`,
+      value: activeAutomations,
+      note:
+        automationCount === 0
+          ? "Create your first flow"
+          : `${automationCount} flow${automationCount !== 1 ? "s" : ""} total`,
       icon: Zap,
       href: "/dashboard/automations",
     },
     {
-      label: "Messages Sent",
-      value: "—",
-      note: "Connect WhatsApp to track",
+      label: "Messages",
+      value: waConnected ? "Live" : "—",
+      note: waConnected ? "WhatsApp connected" : "Connect WhatsApp to track",
       icon: MessageSquare,
       href: "/dashboard/messages",
     },
@@ -96,7 +114,9 @@ export default function Dashboard() {
       description="Here's what's happening with your WhatsApp."
       actions={
         <>
-          <Button variant="outline" className="rounded-xl">Export Report</Button>
+          <Button variant="outline" className="rounded-xl">
+            Export Report
+          </Button>
           <Button className="rounded-xl gap-2" asChild>
             <Link href="/dashboard/messages">
               <MessageSquare className="w-4 h-4" />
@@ -119,10 +139,11 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold tracking-tight">
-                  {stat.value === null
-                    ? <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-                    : stat.value
-                  }
+                  {stat.value === null ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  ) : (
+                    stat.value
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1.5">{stat.note}</p>
               </CardContent>
@@ -149,10 +170,16 @@ export default function Dashboard() {
             </div>
             <h3 className="font-semibold mb-1">No conversations yet</h3>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-              Connect your WhatsApp number to start receiving and managing messages here.
+              {waConnected
+                ? "Start messaging your customers from the Messages tab."
+                : "Connect your WhatsApp number to start receiving and managing messages here."}
             </p>
             <Button variant="outline" size="sm" className="rounded-xl mt-4" asChild>
-              <Link href="/dashboard/settings">Connect WhatsApp</Link>
+              {waConnected ? (
+                <Link href="/dashboard/messages">Open Messages</Link>
+              ) : (
+                <Link href="/dashboard/settings">Connect WhatsApp</Link>
+              )}
             </Button>
           </div>
         </Card>
@@ -171,7 +198,9 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{action.label}</p>
-                    <p className="text-xs text-muted-foreground truncate">{action.description}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {action.description}
+                    </p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
                 </div>
@@ -179,7 +208,38 @@ export default function Dashboard() {
             ))}
           </CardContent>
 
-          <div className="px-4 py-3 border-t border-border">
+          <div className="px-4 py-3 border-t border-border space-y-3">
+            {/* WhatsApp Status */}
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                  waConnected
+                    ? "bg-emerald-500/10 text-emerald-600"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {waConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium">WhatsApp</div>
+                {waConnected === null ? (
+                  <div className="text-xs text-muted-foreground">Checking...</div>
+                ) : waConnected ? (
+                  <Badge className="mt-0.5 text-[10px] h-4 px-1.5 bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                    Connected
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="mt-0.5 text-[10px] h-4 px-1.5 text-destructive border-destructive/30"
+                  >
+                    Not connected
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* System Status */}
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
