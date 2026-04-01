@@ -130,3 +130,38 @@ export async function toggleAutomation(uid: string, automationId: string, active
 export async function deleteAutomation(uid: string, automationId: string) {
   await deleteDoc(doc(db, "users", uid, "automations", automationId));
 }
+
+// ─── Messages ───────────────────────────────────────────────────────────────
+
+export interface ChatMessage {
+  id: string;
+  phone: string;
+  text: string;
+  direction: "incoming" | "outgoing";
+  fromName?: string;
+  status: "sent" | "delivered" | "read";
+  timestamp: string;
+  createdAt: any;
+}
+
+export async function saveMessage(
+  uid: string,
+  msg: Omit<ChatMessage, "createdAt">
+): Promise<void> {
+  const ref = doc(db, "users", uid, "messages", msg.id);
+  await setDoc(ref, { ...msg, createdAt: serverTimestamp() }, { merge: true });
+}
+
+export function subscribeToMessages(
+  uid: string,
+  callback: (messages: ChatMessage[]) => void
+): Unsubscribe {
+  const q = query(
+    collection(db, "users", uid, "messages"),
+    orderBy("createdAt", "asc")
+  );
+  return onSnapshot(q, (snap) => {
+    const data = snap.docs.map((d) => ({ ...d.data() } as ChatMessage));
+    callback(data);
+  });
+}
