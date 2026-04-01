@@ -13,6 +13,7 @@ import {
   Bell,
   Search,
   Zap,
+  ChevronLeft,
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -64,9 +65,11 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
     .toUpperCase()
     .slice(0, 2);
 
+  const isSubPage = location !== "/dashboard";
+
   return (
     <div className="min-h-[100dvh] flex bg-background">
-      {/* Sidebar */}
+      {/* ── Desktop Sidebar ── */}
       <aside className="w-64 border-r border-sidebar-border bg-sidebar hidden md:flex flex-col shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -125,23 +128,48 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
         </div>
       </aside>
 
-      {/* Main */}
+      {/* ── Main Content ── */}
       <main className="flex-1 flex flex-col min-w-0">
-        {/* Topbar */}
+        {/* ── Topbar ── */}
         <header className="h-16 border-b border-border bg-background/95 backdrop-blur flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
-          <div className="relative w-64 hidden sm:block">
+          {/* Mobile: back button or logo */}
+          <div className="flex items-center gap-2 md:hidden">
+            {isSubPage ? (
+              <button
+                onClick={() => window.history.back()}
+                className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors -ml-1 px-2 py-1.5 rounded-lg hover:bg-muted active:bg-muted"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                Back
+              </button>
+            ) : (
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="w-6 h-6 rounded-md overflow-hidden shrink-0">
+                  <img src="/zapchat-logo.jpeg" alt="ZapChat" className="w-full h-full object-contain" />
+                </div>
+                <span className="font-serif text-lg tracking-tight">ZapChat</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Desktop: search */}
+          <div className="relative w-64 hidden md:block">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search..."
               className="pl-9 bg-muted/50 border-transparent focus-visible:bg-background h-9 rounded-lg"
             />
           </div>
+
           <div className="flex items-center gap-3 ml-auto">
             <Button variant="ghost" size="icon" className="rounded-full relative">
               <Bell className="w-4 h-4" />
             </Button>
             <ThemeToggle />
-            <Avatar className="w-8 h-8 rounded-full cursor-pointer" onClick={() => navigate("/dashboard/settings")}>
+            <Avatar
+              className="w-8 h-8 rounded-full cursor-pointer"
+              onClick={() => navigate("/dashboard/settings")}
+            >
               {user.photoURL && <AvatarImage src={user.photoURL} alt={displayName} />}
               <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
                 {initials}
@@ -150,18 +178,46 @@ export function DashboardLayout({ children, title, description, actions }: Dashb
           </div>
         </header>
 
-        {/* Page Content */}
-        <div className="flex-1 p-4 md:p-8 overflow-auto">
+        {/* ── Page Content ── */}
+        <div className="flex-1 p-4 md:p-8 overflow-auto pb-24 md:pb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
               {description && <p className="text-muted-foreground mt-1">{description}</p>}
             </div>
-            {actions && <div className="flex items-center gap-3">{actions}</div>}
+            {actions && <div className="flex items-center gap-3 flex-wrap">{actions}</div>}
           </div>
           {children}
         </div>
       </main>
+
+      {/* ── Mobile Bottom Tab Bar ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur border-t border-border">
+        <div className="flex items-center justify-around px-2 py-2">
+          {navItems.map((item) => {
+            const isActive =
+              item.href === "/dashboard"
+                ? location === "/dashboard"
+                : location.startsWith(item.href);
+            return (
+              <Link key={item.label} href={item.href}>
+                <div
+                  className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors ${
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
+                  <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
+                    {item.label}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
