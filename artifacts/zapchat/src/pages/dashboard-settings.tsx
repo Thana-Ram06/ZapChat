@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link2, Bell, Shield, MessageSquare, LogOut, CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { apiUrl } from "@/lib/api";
 
 interface WhatsAppStatus {
   configured: boolean;
@@ -50,7 +51,7 @@ export default function SettingsPage() {
   useEffect(() => {
     async function checkWhatsApp() {
       try {
-        const res = await fetch("/api/whatsapp/status");
+        const res = await fetch(apiUrl("/whatsapp/status"));
         if (res.ok) {
           const data = await res.json();
           setWhatsappStatus(data);

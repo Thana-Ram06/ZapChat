@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useAuth } from "@/contexts/auth-context";
 import { subscribeToCustomers, Customer } from "@/lib/firestore";
+import { apiUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,7 +62,7 @@ export default function MessagesPage() {
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const res = await fetch("/api/whatsapp/messages");
+        const res = await fetch(apiUrl("/whatsapp/messages"));
         if (!res.ok) return;
         const data = await res.json();
         setMessages(data.messages || []);
@@ -73,7 +74,7 @@ export default function MessagesPage() {
 
     async function checkStatus() {
       try {
-        const res = await fetch("/api/whatsapp/status");
+        const res = await fetch(apiUrl("/whatsapp/status"));
         if (res.ok) {
           const data = await res.json();
           setConfigured(data.configured);
@@ -110,14 +111,14 @@ export default function MessagesPage() {
     if (!selectedPhone || !sendText.trim() || sending) return;
     setSending(true);
     try {
-      const res = await fetch("/api/whatsapp/send", {
+      const res = await fetch(apiUrl("/whatsapp/send"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: selectedPhone, message: sendText.trim() }),
       });
       if (res.ok) {
         setSendText("");
-        const data = await fetch("/api/whatsapp/messages");
+        const data = await fetch(apiUrl("/whatsapp/messages"));
         const json = await data.json();
         setMessages(json.messages || []);
       }
