@@ -3,9 +3,22 @@ import { logger } from "../lib/logger";
 
 const router = Router();
 
-const VERIFY_TOKEN = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || "zapchat_verify_2024";
-const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || "";
-const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || "";
+const VERIFY_TOKEN =
+  process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || "zapchat_verify_2024";
+
+function getCredentials() {
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN || "";
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID || "";
+
+  if (!accessToken) {
+    logger.warn("WHATSAPP_ACCESS_TOKEN is not set");
+  }
+  if (!phoneNumberId) {
+    logger.warn("WHATSAPP_PHONE_NUMBER_ID is not set");
+  }
+
+  return { accessToken, phoneNumberId };
+}
 
 export interface StoredMessage {
   id: string;
@@ -21,6 +34,23 @@ export interface StoredMessage {
 const messageStore: StoredMessage[] = [];
 const MAX_MESSAGES = 500;
 
+// ─── GET /api/whatsapp/status ─────────────────────────────────────────────
+router.get("/status", (_req, res) => {
+  const { accessToken, phoneNumberId } = getCredentials();
+  const configured = !!(accessToken && phoneNumberId);
+
+  logger.info(
+    { configured, phoneNumberId: phoneNumberId ? `***${phoneNumberId.slice(-4)}` : null },
+    "WhatsApp status check"
+  );
+
+  res.json({
+    configured,
+    phoneNumberId: phoneNumberId ? `***${phoneNumberId.slice(-4)}` : null,
+    messageCount: messageStore.length,
+  });
+});
+
 // ─── GET /api/whatsapp/webhook  (Meta verification) ───────────────────────
 router.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
@@ -28,10 +58,10 @@ router.get("/webhook", (req, res) => {
   const challenge = req.query["hub.challenge"];
 
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    logger.info("WhatsApp webhook verified");
+    logger.info("WhatsApp webhook verified successfully");
     res.status(200).send(challenge);
   } else {
-    logger.warn("Webhook verification failed");
+    logger.warn({ mode, token }, "Webhook verification failed — token mismatch");
     res.status(403).send("Forbidden");
   }
 });
@@ -84,17 +114,22 @@ router.post("/send", async (req, res) => {
     return res.status(400).json({ error: "Missing 'to' or 'message'" });
   }
 
-  if (!ACCESS_TOKEN || !PHONE_NUMBER_ID) {
-    return res.status(500).json({ error: "WhatsApp credentials not configured" });
+  const { accessToken, phoneNumberId } = getCredentials();
+
+  if (!accessToken || !phoneNumberId) {
+    logger.error("Cannot send message — WhatsApp credentials missing");
+    return res.status(500).json({
+      error: "WhatsApp credentials not configured. Check WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID in Replit Secrets.",
+    });
   }
 
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+      `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -110,7 +145,7 @@ router.post("/send", async (req, res) => {
     const data = (await response.json()) as any;
 
     if (!response.ok) {
-      logger.error({ data }, "WhatsApp send error");
+      logger.error({ status: response.status, data }, "WhatsApp send failed");
       return res.status(response.status).json(data);
     }
 
@@ -124,21 +159,12 @@ router.post("/send", async (req, res) => {
     };
     messageStore.unshift(sent);
 
-    logger.info({ to, message }, "WhatsApp message sent");
+    logger.info({ to, message }, "WhatsApp message sent successfully");
     res.json({ success: true, messageId: sent.id });
   } catch (err) {
     logger.error(err, "Failed to send WhatsApp message");
     res.status(500).json({ error: "Failed to send message" });
   }
-});
-
-// ─── GET /api/whatsapp/status  (Check config) ────────────────────────────
-router.get("/status", (_req, res) => {
-  res.json({
-    configured: !!(ACCESS_TOKEN && PHONE_NUMBER_ID),
-    phoneNumberId: PHONE_NUMBER_ID ? `***${PHONE_NUMBER_ID.slice(-4)}` : null,
-    messageCount: messageStore.length,
-  });
 });
 
 export default router;
