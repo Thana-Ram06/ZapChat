@@ -100,18 +100,18 @@ export default function LandingPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 items-center">
-              {/* Starter */}
+              {/* Free */}
               <div className="p-8 rounded-3xl bg-card border border-card-border">
                 <div className="mb-8">
-                  <h3 className="text-xl font-medium mb-2">Starter</h3>
+                  <h3 className="text-xl font-medium mb-2">Free</h3>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold">$29</span>
+                    <span className="text-4xl font-bold">$0</span>
                     <span className="text-muted-foreground">/mo</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-4">Perfect for new businesses.</p>
                 </div>
                 <ul className="space-y-4 mb-8">
-                  {['1,000 messages/mo', '1 team member', 'Basic auto-replies', 'Standard support'].map((item, i) => (
+                  {['100 messages/mo', '1 team member', 'Basic auto-replies', 'Standard support'].map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
                       <CheckCircle2 className="w-5 h-5 text-primary" />
                       <span>{item}</span>
@@ -119,7 +119,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Button className="w-full rounded-xl" variant="outline" asChild>
-                  <Link href="/pricing">Get Starter</Link>
+                  <Link href="/pricing">Get started free</Link>
                 </Button>
               </div>
 
@@ -131,7 +131,7 @@ export default function LandingPage() {
                 <div className="mb-8">
                   <h3 className="text-xl font-medium mb-2">Pro</h3>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-bold">$79</span>
+                    <span className="text-5xl font-bold">$49</span>
                     <span className="text-primary-foreground/80">/mo</span>
                   </div>
                   <p className="text-sm text-primary-foreground/80 mt-4">For growing ecommerce stores.</p>
@@ -154,7 +154,7 @@ export default function LandingPage() {
                 <div className="mb-8">
                   <h3 className="text-xl font-medium mb-2">Business</h3>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold">$199</span>
+                    <span className="text-4xl font-bold">$99</span>
                     <span className="text-muted-foreground">/mo</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-4">For high-volume brands.</p>

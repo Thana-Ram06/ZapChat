@@ -6,23 +6,23 @@ import { CheckCircle2 } from "lucide-react";
 
 const plans = [
   {
-    name: "Starter",
-    price: "$29",
-    description: "Perfect for small businesses just getting started with WhatsApp automation.",
+    name: "Free",
+    price: "$0",
+    description: "Get started with WhatsApp automation at no cost.",
     features: [
       "1 WhatsApp number",
-      "1,000 messages/month",
+      "100 messages/month",
       "Basic auto replies",
       "Contact management",
       "Email support",
-      "2 team members",
+      "1 team member",
     ],
-    cta: "Start free trial",
+    cta: "Get started free",
     highlighted: false,
   },
   {
     name: "Pro",
-    price: "$79",
+    price: "$49",
     description: "For growing businesses that need more power and integrations.",
     features: [
       "3 WhatsApp numbers",
@@ -39,7 +39,7 @@ const plans = [
   },
   {
     name: "Business",
-    price: "$199",
+    price: "$99",
     description: "Enterprise-grade features for high-volume operations.",
     features: [
       "Unlimited WhatsApp numbers",
