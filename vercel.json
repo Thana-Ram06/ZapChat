@@ -2,5 +2,8 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/zapchat run build",
   "outputDirectory": "artifacts/zapchat/dist/public",
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
