@@ -70,7 +70,7 @@ export function Footer() {
               <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-foreground transition-all duration-200 group-hover:w-full" />
             </Link>
             <a
-              href="https://x.com/anoinv?s=21"
+              href="https://x.com/tr_dev06"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors relative group"
